@@ -119,7 +119,6 @@ module api{
 
             }
             body.push('} return __C.join("");');
-        console.log(body.join(''))
             return body.join('');
         }
 
