@@ -12,6 +12,20 @@ Helper supported:
  ...
 {%endif%}
 ```
+
+### switch
+```
+{%switch expression%}
+ ...
+{%case expression%}
+ ...
+{%endcase%}
+ ...
+{%default%}
+ ...
+{%endswitch%}
+```
+
 ### each
 ```
 {%each data as value,index%}
