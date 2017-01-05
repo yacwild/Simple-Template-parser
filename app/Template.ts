@@ -27,13 +27,24 @@ module api{
         }    
     }
 
+    export class SwitchHelper extends AbstractHelper {
+        name = 'SwitchHelper';
+        helperRegs =[ 
+            {reg: /^switch\s+(.+)$/, output: (token)=>'switch(' + (RegExp.$1) + '){'},
+            {reg: /^case\s+(.+)$/, output:(token)=> 'case ' + (RegExp.$1) + ' :' },
+            {reg: /^endCase$/i, output:(token)=> ';break;'  },
+            {reg: /^default$/i, output:(token)=> 'default:'  },
+            {reg: /^endSwitch$/i, output: (token)=>'}' },
+        ];
+    }
+
     export class IfHelper extends AbstractHelper {
         name = 'IfHelper';
         helperRegs =[ 
             {reg: /^if\s+(.+)$/, output: (token)=>'if(' + this.expr(RegExp.$1) + '){'},
             {reg: /^elseif\s+(.+)$/, output:(token)=> '}else if(' + this.expr(RegExp.$1) + '){'},
             {reg: /^else$/, output:(token)=> '}else{'  },
-            {reg: /^endif$/, output: (token)=>'}' },
+            {reg: /^endif$/i, output: (token)=>'}' },
         ];
     }
 
@@ -64,7 +75,7 @@ module api{
         static REGEXPs  = { QUOTE:/'/g, LINE:/[\t\b\f\r\n]/g, ESCAPE:/\\/g };
         static TOKENS   = { OPEN:'{%', CLOSE:'%}' };
         static _defaultHelper:IHelper = new ExpressionHelper();
-        static _helpers:IHelper[]     = [new IfHelper, new EachHelper, new VarHelper];
+        static _helpers:IHelper[]     = [new IfHelper, new EachHelper, new VarHelper, new SwitchHelper];
         static _sources:{[name:string]:Template} = {};
 
         static register(id:string, source:string):Template{
@@ -83,8 +94,8 @@ module api{
         }
 
         static getTemplateParsed(template){
-        var body = ['var __C=[]; with(__D){'];
-        var part, content;
+            var body = ['var __C=[]; with(__D){'];
+             var part, content,staticContent;
             template = template.split(TemplateManager.TOKENS.OPEN);
             body.push(TemplateManager.getStrpush( TemplateManager.quote(template.shift()) ));
 
@@ -99,13 +110,16 @@ module api{
                     }
                     body.push(content);
                 }
-
-                body.push(
-                    TemplateManager.getStrpush(TemplateManager.quote(parts.join(TemplateManager.TOKENS.CLOSE)))
-                );
+                
+                staticContent = parts.join(TemplateManager.TOKENS.CLOSE);
+                if(staticContent)
+                    body.push(
+                        TemplateManager.getStrpush(TemplateManager.quote(staticContent))
+                    );
 
             }
             body.push('} return __C.join("");');
+        console.log(body.join(''))
             return body.join('');
         }
 
@@ -113,7 +127,7 @@ module api{
             return '__C.push(' + value  + ');';
         }
 
-        static quote(str) {
+        static quote(str) {                        
             return "'" + str.replace(TemplateManager.REGEXPs.ESCAPE, '\\\\')
                             .replace(TemplateManager.REGEXPs.QUOTE, "\\'")
                             .replace(TemplateManager.REGEXPs.LINE, ' ') + "'";

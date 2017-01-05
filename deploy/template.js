@@ -155,6 +155,22 @@ var api;
         return AbstractHelper;
     }());
     api.AbstractHelper = AbstractHelper;
+    var SwitchHelper = (function (_super) {
+        __extends(SwitchHelper, _super);
+        function SwitchHelper() {
+            _super.apply(this, arguments);
+            this.name = 'SwitchHelper';
+            this.helperRegs = [
+                { reg: /^switch\s+(.+)$/, output: function (token) { return 'switch(' + (RegExp.$1) + '){'; } },
+                { reg: /^case\s+(.+)$/, output: function (token) { return 'case ' + (RegExp.$1) + ' :'; } },
+                { reg: /^endCase$/i, output: function (token) { return ';break;'; } },
+                { reg: /^default$/i, output: function (token) { return 'default:'; } },
+                { reg: /^endSwitch$/i, output: function (token) { return '}'; } },
+            ];
+        }
+        return SwitchHelper;
+    }(AbstractHelper));
+    api.SwitchHelper = SwitchHelper;
     var IfHelper = (function (_super) {
         __extends(IfHelper, _super);
         function IfHelper() {
@@ -165,7 +181,7 @@ var api;
                 { reg: /^if\s+(.+)$/, output: function (token) { return 'if(' + _this.expr(RegExp.$1) + '){'; } },
                 { reg: /^elseif\s+(.+)$/, output: function (token) { return '}else if(' + _this.expr(RegExp.$1) + '){'; } },
                 { reg: /^else$/, output: function (token) { return '}else{'; } },
-                { reg: /^endif$/, output: function (token) { return '}'; } },
+                { reg: /^endif$/i, output: function (token) { return '}'; } },
             ];
         }
         return IfHelper;
@@ -228,7 +244,7 @@ var api;
         };
         TemplateManager.getTemplateParsed = function (template) {
             var body = ['var __C=[]; with(__D){'];
-            var part, content;
+            var part, content, staticContent;
             template = template.split(TemplateManager.TOKENS.OPEN);
             body.push(TemplateManager.getStrpush(TemplateManager.quote(template.shift())));
             while (part = template.shift()) {
@@ -242,9 +258,12 @@ var api;
                     }
                     body.push(content);
                 }
-                body.push(TemplateManager.getStrpush(TemplateManager.quote(parts.join(TemplateManager.TOKENS.CLOSE))));
+                staticContent = parts.join(TemplateManager.TOKENS.CLOSE);
+                if (staticContent)
+                    body.push(TemplateManager.getStrpush(TemplateManager.quote(staticContent)));
             }
             body.push('} return __C.join("");');
+            console.log(body.join(''));
             return body.join('');
         };
         TemplateManager.getStrpush = function (value) {
@@ -258,7 +277,7 @@ var api;
         TemplateManager.REGEXPs = { QUOTE: /'/g, LINE: /[\t\b\f\r\n]/g, ESCAPE: /\\/g };
         TemplateManager.TOKENS = { OPEN: '{%', CLOSE: '%}' };
         TemplateManager._defaultHelper = new ExpressionHelper();
-        TemplateManager._helpers = [new IfHelper, new EachHelper, new VarHelper];
+        TemplateManager._helpers = [new IfHelper, new EachHelper, new VarHelper, new SwitchHelper];
         TemplateManager._sources = {};
         return TemplateManager;
     }());

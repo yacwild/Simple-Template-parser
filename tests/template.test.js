@@ -26,4 +26,15 @@ describe('Template parser', function() {
         temp = new  api.Template('<ul>{% each items as item %}<li>{% item.name %}</li>{% endeach %}</ul>');
         expect(temp.render({items:[{name:'House'},{name:'Aparment'}]})).toBe('<ul><li>House</li><li>Aparment</li></ul>');
     });
+
+    it('switch helper', function() {
+        temp = new  api.Template('<h1>{%switch flag%}{%case true%}its true{%endCase%}{%case "Success"%}Case succes{%endCase%}{%endswitch%}</h1>');
+        expect(temp.render({flag:true})).toBe('<h1>its true</h1>');
+        expect(temp.render({flag:false})).toBe('<h1></h1>');
+        expect(temp.render({flag:"Success"})).toBe('<h1>Case succes</h1>');
+
+        temp = new  api.Template('<h1>{%switch flag%}{%case true%}its true{%endCase%}{%case "Success"%}Case succes{%endCase%}{%default%}Case default{%endCase%}{%endswitch%}</h1>');
+        expect(temp.render({flag:"Error"})).toBe('<h1>Case default</h1>');
+    });
 });
+
