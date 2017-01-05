@@ -1,0 +1,27 @@
+{
+  "name": "simple_template_parser",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "gulp test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yacwild/Simple-Template-parser.git"
+  },
+  "author": "0jes - Jose Jimenez",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yacwild/Simple-Template-parser/issues"
+  },
+  "homepage": "https://github.com/yacwild/Simple-Template-parser#readme",
+  "devDependencies": {
+    "gulp-jasmine": "^2.4.2",
+    "gulp-typescript": "^2.13.6",
+    "karma": "^1.1.1",
+    "karma-jasmine": "^1.0.2",
+    "karma-phantomjs-launcher": "^1.0.1",
+    "karma-spec-reporter": "0.0.26"
+  }
+}
